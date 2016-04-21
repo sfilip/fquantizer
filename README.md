@@ -2,8 +2,7 @@
 =========================================
 
 ## Description ##
-Routines for linear-phase FIR quantization based on Euclidean lattice reduction
-algorithms.
+Routines for linear-phase FIR quantization based on Euclidean lattice basis reduction algorithms.
 
 ## Installation instructions ##
 This code has been tested **only** on Linux machines. In order to compile and use it, a recent version of g++ with
