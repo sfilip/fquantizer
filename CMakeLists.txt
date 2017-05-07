@@ -30,7 +30,7 @@ find_package(Doxygen)
 # build configuration
 #----------------------------------------
 set(CMAKE_BUILD_TYPE Release)
-add_definitions(-std=c++11)
+add_definitions(-std=gnu++11)
 
 #----------------------------------------
 # common include directories
@@ -41,7 +41,6 @@ add_subdirectory(${PROJECT_SOURCE_DIR}/src)
 if(DOXYGEN_FOUND)
     add_subdirectory(${PROJECT_SOURCE_DIR}/doc)
 endif()
-
 
 #----------------------------------------
 # tests

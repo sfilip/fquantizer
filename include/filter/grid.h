@@ -16,22 +16,20 @@
 
 struct GridPoint
 {
-    mpfr::mpreal omega;
-    mpfr::mpreal x;
-    mpfr::mpreal D;
-    mpfr::mpreal W;
+    double omega;
+    double x;
+    double D;
+    double W;
 };
 
 void generateGrid(std::vector<GridPoint>& grid, std::size_t degree,
     std::vector<Band>& freqBands, std::size_t density = 16u,
     mp_prec_t prec = 165ul);
 
-void getError(mpfr::mpreal& error, std::vector<Band>& chebyBands,
-    GridPoint& p, std::vector<mpfr::mpreal>& a, mp_prec_t prec = 165ul);
 
-void computeDenseNorm(mpfr::mpreal& normValue,
-    std::vector<mpfr::mpreal>& bandNorms,
+void computeDenseNorm(double& normValue,
+    std::vector<double>& bandNorms,
     std::vector<Band>& chebyBands, std::vector<GridPoint>& grid,
-    std::vector<mpfr::mpreal>& a, mp_prec_t prec = 165ul);
+    std::vector<double>& a);
 
 #endif  // GRID_H

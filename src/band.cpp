@@ -25,3 +25,25 @@ void bandConversion(std::vector<Band> &out, std::vector<Band> &in,
 
   mpreal::set_default_prec(prevPrec);
 }
+
+void bandConversion(std::vector<BandD> &out, std::vector<BandD> &in,
+                    ConversionDirection direction) {
+    out.resize(in.size());
+    int n = in.size() - 1;
+    for (std::size_t i = 0u; i < in.size(); ++i)
+    {
+        out[i].weight    = in[n - i].weight;
+        out[i].amplitude = in[n - i].amplitude;
+        out[i].extremas  = in[n - i].extremas;
+        if (direction == ConversionDirection::FROMFREQ)
+        {
+            out[i].start = cos(in[n - i].stop);
+            out[i].stop  = cos(in[n - i].start);
+            out[i].space = BandSpace::CHEBY;
+        } else {
+            out[i].start = acos(in[n - i].stop);
+            out[i].stop  = acos(in[n - i].start);
+            out[i].space = BandSpace::FREQ;
+        }
+    }
+}

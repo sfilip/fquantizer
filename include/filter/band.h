@@ -38,6 +38,15 @@ struct Band {
   std::size_t extremas; /**< number of interpolation points taken in the band */
 };
 
+struct BandD {
+	BandSpace space;
+	std::function<double(BandSpace, double)> amplitude;
+	double start;
+	double stop;
+	std::function<double(BandSpace, double)> weight;
+	std::size_t extremas;
+};
+
 /**
  * Gives the direction in which the change of variable is performed
  */
@@ -55,5 +64,8 @@ enum ConversionDirection {
  */
 void bandConversion(std::vector<Band> &out, std::vector<Band> &in,
                     ConversionDirection direction, mp_prec_t prec = 165ul);
+
+void bandConversion(std::vector<BandD> &out, std::vector<BandD> &in,
+        ConversionDirection direction);
 
 #endif /* BAND_H_ */

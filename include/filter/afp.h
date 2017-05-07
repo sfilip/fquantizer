@@ -37,4 +37,28 @@ void chebyMeshGeneration(std::vector<mpfr::mpreal> &chebyMesh,
                          std::vector<Band> &chebyBands, std::size_t degree,
                          mp_prec_t prec = 165u);
 
+typedef Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> MatrixXd;
+typedef Eigen::Matrix<double, Eigen::Dynamic, 1> VectorXd;
+
+void generateAFPMatrix(
+    MatrixXd &A, std::size_t degree, std::vector<double> &meshPoints,
+    std::function<double(double)> &weightFunction);
+
+// approximate Fekete points
+void AFP(std::vector<double> &points, MatrixXd &A,
+         std::vector<double> &meshPoints);
+
+void generateVandermondeMatrix(
+    MatrixXd &Vm, std::vector<double> &grid,
+    std::function<double(double)> &weightFunction,
+    std::size_t degree, mp_prec_t prec = 165u);
+
+void linspace(std::vector<double> &points, double &a,
+              double &b, std::size_t N);
+
+void bandCount(std::vector<BandD> &chebyBands, std::vector<double> &x);
+
+void chebyMeshGeneration(std::vector<double> &chebyMesh,
+                         std::vector<BandD> &chebyBands, std::size_t degree);
+
 #endif /* AFP_H_ */
