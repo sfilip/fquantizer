@@ -2,7 +2,9 @@
 =========================================
 
 ## Description ##
-Routines for linear-phase FIR quantization based on Euclidean lattice basis reduction algorithms.
+Routines for linear-phase FIR filter design with fixed-point coefficients, based on
+Euclidean lattice basis reduction algorithms. For a detailed presentation, see
+[1, Ch. 4] and [2], with [2] being more up to date.
 
 ## Installation instructions ##
 This code has been tested **only** on Linux machines. In order to compile and use it, a recent version of g++ with
@@ -46,3 +48,10 @@ be generated individually by running the command
         make doc
 
 after cmake was called.
+
+## References
+[1] S.-I. Filip, Robust tools for weighted Chebyshev approximation and
+applications to digital filter design, Ph.D. dissertation, ENS de Lyon, France, 2016.
+[2] N. Brisebarre, S.-I. Filip, G. Hanrot, A lattice basis reduction approach
+for the design of finite wordlength FIR filters, IEEE Transactions on Signal Processing 66,
+10 (May 2018), 2673 - 2684
