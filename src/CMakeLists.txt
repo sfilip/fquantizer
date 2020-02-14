@@ -14,7 +14,7 @@ include_directories (${PROJECT_INCLUDE_DIR} ${EIGEN3_INCLUDE_DIRS} ${MPFR_INCLUD
 add_library(fquantizer SHARED ${PROJECT_SRC_FILES})
 
 
-target_link_libraries(fquantizer PRIVATE ${GMP_LIBRARIES} ${MPFR_LIBRARIES} ${FPLLL_LIBRARY} OpenMP::OpenMP_CXX)
+target_link_libraries(fquantizer PRIVATE ${GMP_LIBRARIES} ${MPFR_LIBRARIES} ${FPLLL_LIBRARY} ${FIRPM_LIBRARY} OpenMP::OpenMP_CXX)
 
 install(TARGETS fquantizer DESTINATION lib)
 install(DIRECTORY ${PROJECT_INCLUDE_DIR}/fquantizer DESTINATION include)

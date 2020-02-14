@@ -18,6 +18,7 @@ find_package(Eigen3 REQUIRED)
 find_package(GMP 6.0.0 REQUIRED)
 find_package(MPFR 4.0.0 REQUIRED)
 find_package(FPLLL REQUIRED)
+find_package(FIRPM REQUIRED)
 find_package(Doxygen)
 
 
@@ -30,7 +31,8 @@ add_definitions(-std=c++11 -Wall)
 #----------------------------------------
 # common include directories
 #----------------------------------------
-set(COMMON_INCLUDES ${PROJECT_SOURCE_DIR}/include ${MPFR_INCLUDES} ${GMP_INCLUDES})
+set(COMMON_INCLUDES ${PROJECT_SOURCE_DIR}/include ${MPFR_INCLUDES} ${GMP_INCLUDES} 
+                    ${FPLLL_INCLUDE} ${FIRPM_INCLUDE})
 
 add_subdirectory(${PROJECT_SOURCE_DIR}/src)
 if(DOXYGEN_FOUND)
@@ -89,6 +91,7 @@ target_link_libraries(${PROJECT_TEST_QUANTIZATION}
     ${GMP_LIBRARIES}
     ${MPFR_LIBRARIES}
     ${FPLLL_LIBRARY}
+    ${FIRPM_LIBRARY}
 )
 
 add_test(QuantizationTests ${PROJECT_TEST_QUANTIZATION})
