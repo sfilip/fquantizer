@@ -133,7 +133,7 @@ void createFIRBasisType1(fplll::ZZ_mat<mpz_t> &basis,
         nexp += 0u;
       mpz_ui_pow_ui(intBuffer, 2u, (unsigned int)nexp);
       mpz_mul(intBuffer, intBuffer, decomp.first.get_mpz_t());
-      mpz_set(basis(i, j).getData(), intBuffer);
+      mpz_set(basis(i, j).get_data(), intBuffer);
     }
 
   nT.clear();
@@ -217,7 +217,7 @@ void createFIRBasisType1V2(fplll::ZZ_mat<mpz_t> &basis,
         nexp += 0u;
       mpz_ui_pow_ui(intBuffer, 2u, (unsigned int)nexp);
       mpz_mul(intBuffer, intBuffer, decomp.first.get_mpz_t());
-      mpz_set(basis(i, j).getData(), intBuffer);
+      mpz_set(basis(i, j).get_data(), intBuffer);
     }
 
   nT1.clear();
@@ -255,10 +255,10 @@ void maxVectorNorm(mpz_t *maxNorm, fplll::ZZ_mat<mpz_t> &basis) {
   mpz_init(iter);
   mpz_set_ui(maxValue, 0);
 
-  for (int i = 0; i < basis.GetNumRows(); ++i) {
+  for (int i = 0; i < basis.get_rows(); ++i) {
     mpz_set_ui(iter, 0);
-    for (int j = 0; j < basis.GetNumCols(); ++j) {
-      mpz_addmul(iter, basis(i, j).getData(), basis(i, j).getData());
+    for (int j = 0; j < basis.get_cols(); ++j) {
+      mpz_addmul(iter, basis(i, j).get_data(), basis(i, j).get_data());
     }
     if (mpz_cmp(iter, maxValue) > 0)
       mpz_set(maxValue, iter);
@@ -280,7 +280,7 @@ void extractBasisVectors(std::vector<std::vector<mpfr::mpreal>> &vBasis,
   for (std::size_t i = 0u; i < dimRows; ++i) {
     vBasis[i].resize(dimCols);
     for (std::size_t j = 0u; j < dimCols; ++j) {
-      vBasis[i][j] = basis(i, j).GetData();
+      vBasis[i][j] = basis(i, j).get_data();
     }
   }
 }
@@ -288,8 +288,8 @@ void extractBasisVectors(std::vector<std::vector<mpfr::mpreal>> &vBasis,
 void applyKannanEmbedding(fplll::ZZ_mat<mpz_t> &basis,
                           std::vector<mpz_class> &t) {
 
-  int outCols = basis.GetNumCols() + 1;
-  int outRows = basis.GetNumRows() + 1;
+  int outCols = basis.get_cols() + 1;
+  int outRows = basis.get_rows() + 1;
 
   mpz_t w; // the CVP t vector weight
   mpz_init(w);
@@ -297,10 +297,10 @@ void applyKannanEmbedding(fplll::ZZ_mat<mpz_t> &basis,
   basis.resize(outRows, outCols);
 
   for (int i = 0; i < outRows - 1; ++i)
-    mpz_set_ui(basis(i, outCols - 1).getData(), 0);
+    mpz_set_ui(basis(i, outCols - 1).get_data(), 0);
   for (int j = 0; j < outCols - 1; ++j)
-    mpz_set(basis(outRows - 1, j).getData(), t[j].get_mpz_t());
-  mpz_set(basis(outRows - 1, outCols - 1).getData(), w);
+    mpz_set(basis(outRows - 1, j).get_data(), t[j].get_mpz_t());
+  mpz_set(basis(outRows - 1, outCols - 1).get_data(), w);
   mpz_clear(w);
 }
 
@@ -320,35 +320,35 @@ void fpminimaxKernel(std::vector<double> &lllCoeffs,
   fplll::ZZ_mat<mpz_t> basis;
   createFIRBasisType1(basis, nodes, iT, nT, weights, scalingFactor, n, prec);
   applyKannanEmbedding(basis, nT);
-  fplll::ZZ_mat<mpz_t> u(basis.GetNumRows(), basis.GetNumCols());
+  fplll::ZZ_mat<mpz_t> u(basis.get_rows(), basis.get_cols());
 
-  fplll::lllReduction(basis, u, 0.99, 0.51);
+  fplll::lll_reduction(basis, u, 0.99, 0.51);
   // Uncomment the next line and comment the next one for BKZ or HKZ reduction
   //fplll::bkzReduction(basis, u, 8u);
 
   std::vector<mpz_class> intLLLCoeffs;
   std::vector<std::vector<mpz_class>> intSVPCoeffs(n);
   int xdp1 =
-      (int)mpz_get_si(u.Get(u.GetNumRows() - 1, u.GetNumCols() - 1).GetData());
+      (int)mpz_get_si(u(u.get_rows() - 1, u.get_cols() - 1).get_data());
 
   mpz_t coeffAux;
   mpz_init(coeffAux);
   switch (xdp1) {
   case 1:
-    for (int i{0}; i < u.GetNumCols() - 1; ++i) {
-      mpz_neg(coeffAux, u.Get(u.GetNumRows() - 1, i).GetData());
+    for (int i{0}; i < u.get_cols() - 1; ++i) {
+      mpz_neg(coeffAux, u(u.get_rows() - 1, i).get_data());
       intLLLCoeffs.push_back(mpz_class(coeffAux));
       for (int j{0}; j < (int)n; ++j) {
-        mpz_set(coeffAux, u.Get(j, i).GetData());
+        mpz_set(coeffAux, u(j, i).get_data());
         intSVPCoeffs[j].push_back(mpz_class(coeffAux));
       }
     }
     break;
   case -1:
-    for (int i = 0; i < u.GetNumCols() - 1; ++i) {
-      intLLLCoeffs.push_back(mpz_class(u.Get(u.GetNumRows() - 1, i).GetData()));
+    for (int i = 0; i < u.get_cols() - 1; ++i) {
+      intLLLCoeffs.push_back(mpz_class(u(u.get_rows() - 1, i).get_data()));
       for (int j = 0; j < (int)n; ++j) {
-        mpz_set(coeffAux, u.Get(j, i).GetData());
+        mpz_set(coeffAux, u(j, i).get_data());
         intSVPCoeffs[j].push_back(mpz_class(coeffAux));
       }
     }
@@ -402,21 +402,21 @@ void fpminimaxKernelV2(std::vector<double> &lllCoeffs1,
   fplll::ZZ_mat<mpz_t> origBasis;
   createFIRBasisType1V2(basis, nodes, iT1, nT1, iT2, nT2, weights, scalingFactor, n, prec);
   applyKannanEmbedding(basis, nT1);
-  fplll::ZZ_mat<mpz_t> u(basis.GetNumRows(), basis.GetNumCols());
+  fplll::ZZ_mat<mpz_t> u(basis.get_rows(), basis.get_cols());
 
 
-  fplll::lllReduction(basis, u, 0.99, 0.51);
-  //fplll::bkzReduction(basis, u, 8u);
+  fplll::lll_reduction(basis, u, 0.99, 0.51);
+  //fplll::bkz_Reduction(basis, u, 8u);
 
   mpz_t maxValue;
   mpz_t iter;
   mpz_init(maxValue);
   mpz_init(iter);
 
-  for (int i = 0; i < basis.GetNumRows() - 1; ++i) {
+  for (int i = 0; i < basis.get_rows() - 1; ++i) {
     mpz_set_ui(maxValue, 0);
-    for (int j = 0; j < basis.GetNumCols(); ++j) {
-        mpz_abs(iter, basis(i, j).getData());
+    for (int j = 0; j < basis.get_cols(); ++j) {
+        mpz_abs(iter, basis(i, j).get_data());
         if (mpz_cmp(iter, maxValue) > 0)
         mpz_set(maxValue, iter);
     }
@@ -430,29 +430,29 @@ void fpminimaxKernelV2(std::vector<double> &lllCoeffs1,
   std::vector<mpz_class> intLLLCoeffs1;
   std::vector<std::vector<mpz_class>> intSVPCoeffs(n);
   int xdp1 =
-      (int)mpz_get_si(u.Get(u.GetNumRows() - 1, u.GetNumCols() - 1).GetData());
+      (int)mpz_get_si(u(u.get_rows() - 1, u.get_cols() - 1).get_data());
 
   mpz_t coeffAux;
   mpz_init(coeffAux);
   switch (xdp1) {
   case 1:
-    for (int i{0}; i < u.GetNumCols() - 1; ++i) {
-      mpz_neg(coeffAux, u.Get(u.GetNumRows() - 1, i).GetData());
+    for (int i{0}; i < u.get_cols() - 1; ++i) {
+      mpz_neg(coeffAux, u(u.get_rows() - 1, i).get_data());
       intLLLCoeffs1.push_back(mpz_class(coeffAux));
       //std::cout << mpz_class(coeffAux) << std::endl;
       for (int j{0}; j < (int)n; ++j) {
-        mpz_set(coeffAux, u.Get(j, i).GetData());
+        mpz_set(coeffAux, u(j, i).get_data());
         intSVPCoeffs[j].push_back(mpz_class(coeffAux));
       }
     }
     break;
   case -1:
-    for (int i = 0; i < u.GetNumCols() - 1; ++i) {
-      intLLLCoeffs1.push_back(mpz_class(u.Get(u.GetNumRows() - 1, i).GetData()));
+    for (int i = 0; i < u.get_cols() - 1; ++i) {
+      intLLLCoeffs1.push_back(mpz_class(u(u.get_rows() - 1, i).get_data()));
 
       //std::cout << mpz_class(coeffAux) << std::endl;
       for (int j = 0; j < (int)n; ++j) {
-        mpz_set(coeffAux, u.Get(j, i).GetData());
+        mpz_set(coeffAux, u(j, i).get_data());
         intSVPCoeffs[j].push_back(mpz_class(coeffAux));
 
       }
@@ -482,22 +482,22 @@ void fpminimaxKernelV2(std::vector<double> &lllCoeffs1,
 
   // Get the representation for the second
   fplll::ZZ_mat<mpz_t> basis2;
-  basis2.resize(basis.GetNumRows() - 1u, basis.GetNumCols() - 1u);
-  for(std::size_t i{0u}; i < basis2.GetNumRows(); ++i)
-      for(std::size_t j{0u}; j < basis2.GetNumCols(); ++j)
-        mpz_set(basis2(i, j).getData(), basis(i, j).getData());
+  basis2.resize(basis.get_rows() - 1u, basis.get_cols() - 1u);
+  for(std::size_t i{0u}; i < basis2.get_rows(); ++i)
+      for(std::size_t j{0u}; j < basis2.get_cols(); ++j)
+        mpz_set(basis2(i, j).get_data(), basis(i, j).get_data());
 
   std::vector<mpz_class> intLLLCoeffs2;
 
   applyKannanEmbedding(basis2, nT2);
-  fplll::ZZ_mat<mpz_t> u2(basis2.GetNumRows(), basis2.GetNumCols());
+  fplll::ZZ_mat<mpz_t> u2(basis2.get_rows(), basis2.get_cols());
 
-  fplll::lllReduction(basis2, u2, 0.99, 0.51);
+  fplll::lll_reduction(basis2, u2, 0.99, 0.51);
   //fplll::bkzReduction(basis2, u2, 8u);
 
 
   int xdp2 =
-      (int)mpz_get_si(u2.Get(u2.GetNumRows() - 1, u2.GetNumCols() - 1).GetData());
+      (int)mpz_get_si(u2(u2.get_rows() - 1, u2.get_cols() - 1).get_data());
 
 
   mpz_t coeffBuffer;
@@ -506,7 +506,7 @@ void fpminimaxKernelV2(std::vector<double> &lllCoeffs1,
   {
     mpz_set_ui(coeffBuffer, 0u);
     for(std::size_t j{0u}; j < intLLLCoeffs1.size(); ++j) {
-        mpz_addmul(coeffBuffer, u2.Get(u2.GetNumRows() - 1u, j).GetData(), u.Get(j, i).GetData());
+        mpz_addmul(coeffBuffer, u2(u2.get_rows() - 1u, j).get_data(), u(j, i).get_data());
     }
     if(xdp2 == 1)
         mpz_neg(coeffBuffer, coeffBuffer);
