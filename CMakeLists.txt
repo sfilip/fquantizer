@@ -1,73 +1,97 @@
-cmake_minimum_required (VERSION 2.8.8)
+cmake_minimum_required (VERSION 3.12)
 set(PROJECT_NAME_STR fquantizer)
 project(${PROJECT_NAME_STR})
 # The project version number.
 set(VERSION_MAJOR   0   CACHE STRING "Project major version number.")
-set(VERSION_MINOR   1   CACHE STRING "Project minor version number.")
+set(VERSION_MINOR   2   CACHE STRING "Project minor version number.")
 set(VERSION_PATCH   1   CACHE STRING "Project patch version number.")
 mark_as_advanced(VERSION_MAJOR VERSION_MINOR VERSION_PATCH)
 set(doxy_main_page ${PROJECT_SOURCE_DIR}/README.md)
 
-#----------------------------------------
+#---------------------------------------------------------------------------
 # dependencies testing
-#----------------------------------------
+#---------------------------------------------------------------------------
 list (INSERT CMAKE_MODULE_PATH 0 ${PROJECT_SOURCE_DIR}/cmake)
 
 find_package(OpenMP REQUIRED)
-if (OPENMP_FOUND)
-    set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
-    set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
-endif()
-find_package(Eigen3 REQUIRED)
-find_package(GMP REQUIRED)
-find_package(MPFR REQUIRED)
-find_package(FPLLL REQUIRED)
-find_package(GTest)
+find_package(Eigen3 3.3 REQUIRED)
+find_package(GMP 6.0.0 REQUIRED)
+find_package(MPFR 4.0.0 REQUIRED)
+find_package(FPLLL 5.0.0 REQUIRED)
+find_package(FIRPM 0.2.0 REQUIRED)
 find_package(Doxygen)
 
 
-#----------------------------------------
+#---------------------------------------------------------------------------
 # build configuration
-#----------------------------------------
+#---------------------------------------------------------------------------
 set(CMAKE_BUILD_TYPE Release)
-add_definitions(-std=gnu++11)
+add_definitions(-std=c++11 -Wall)
 
-#----------------------------------------
+#---------------------------------------------------------------------------
 # common include directories
-#----------------------------------------
-set(COMMON_INCLUDES ${PROJECT_SOURCE_DIR}/include)
+#---------------------------------------------------------------------------
+set(COMMON_INCLUDES ${PROJECT_SOURCE_DIR}/include ${MPFR_INCLUDES})
 
 add_subdirectory(${PROJECT_SOURCE_DIR}/src)
 if(DOXYGEN_FOUND)
     add_subdirectory(${PROJECT_SOURCE_DIR}/doc)
 endif()
 
-#----------------------------------------
+#---------------------------------------------------------------------------
 # tests
-#----------------------------------------
-if(GTEST_FOUND)
-    enable_testing()
-    set(PROJECT_TEST_QUANTIZATION quantization_test)
-    set(CMAKE_CTEST_COMMAND ctest -V)
-    include_directories(${GTEST_INCLUDE_DIR} ${COMMON_INCLUDES})
+#---------------------------------------------------------------------------
+# use the solution proposed at:
+# https://github.com/google/googletest/blob/master/googletest/README.md
+# for downloading and compiling the googletest framework inside the
+# project build directory
 
-
-    set(TEST_SRC_QUANTIZATION ${PROJECT_SOURCE_DIR}/test/quantization_tests.cpp)
-
-
-    add_executable(${PROJECT_TEST_QUANTIZATION} ${TEST_SRC_QUANTIZATION})
-
-
-    target_link_libraries(${PROJECT_TEST_QUANTIZATION}
-        gtest
-        gtest_main
-        pthread
-        fquantizer
-        gmp
-        mpfr
-        fplll
-        gomp
-    )
-
-    add_test(QuantizationTests ${PROJECT_TEST_QUANTIZATION})
+configure_file(CMakeLists.txt.in googletest-download/CMakeLists.txt)
+execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
+    RESULT_VARIABLE result
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/googletest-download )
+if(result)
+    message(FATAL_ERROR "CMake step for googletest failed: ${result}")
 endif()
+execute_process(COMMAND ${CMAKE_COMMAND} --build .
+    RESULT_VARIABLE result
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/googletest-download )
+if(result)
+    message(FATAL_ERROR "Build step for googletest failed: ${result}")
+endif()
+
+# Prevent overriding the parent project's compiler/linker settings
+# on Windows
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+# add googletest directory to our build. This defines the gtest
+# and gtest_main targets.
+add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/googletest-src
+                 ${CMAKE_CURRENT_BINARY_DIR}/googletest-build
+                 EXCLUDE_FROM_ALL)
+
+# add the test files and generate the test executables
+# they can be run by calling *make test* after the initial *make*
+enable_testing()
+set(PROJECT_TEST_QUANTIZATION quantization_test)
+set(CMAKE_CTEST_COMMAND ctest -V)
+include_directories(${GTEST_INCLUDE_DIR} ${COMMON_INCLUDES})
+
+
+set(TEST_SRC_QUANTIZATION ${PROJECT_SOURCE_DIR}/test/quantization_tests.cpp)
+
+
+add_executable(${PROJECT_TEST_QUANTIZATION} ${TEST_SRC_QUANTIZATION})
+
+
+target_link_libraries(${PROJECT_TEST_QUANTIZATION}
+    gtest
+    gtest_main
+    pthread
+    fquantizer
+    ${GMP_LIBRARIES}
+    ${MPFR_LIBRARIES}
+    ${FPLLL_LIBRARY}
+    ${FIRPM_LIBRARY}
+)
+
+add_test(QuantizationTests ${PROJECT_TEST_QUANTIZATION})
