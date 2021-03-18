@@ -406,7 +406,7 @@ void fpminimaxKernelV2(std::vector<double> &lllCoeffs1,
 
 
   fplll::lll_reduction(basis, u, 0.99, 0.51);
-  //fplll::bkzReduction(basis, u, 8u);
+  //fplll::bkz_Reduction(basis, u, 8u);
 
   mpz_t maxValue;
   mpz_t iter;
@@ -637,8 +637,6 @@ void fpminimaxWithNeighborhoodSearchDiscrete(
   for (std::size_t k{0u}; k < bandNorms.size(); ++k)
     std::cout << "Band " << k << " error = " << bandNorms[k] << std::endl;
 
-
-  double lllBestNorm;
   std::vector<mpfr::mpreal> mpBufferA(lllA1.size() + fixedA.size());
   std::vector<mpfr::mpreal> mpFinalA1;
   for (std::size_t i = lllA1.size(); i < lllA1.size() + fixedA.size(); ++i)
@@ -932,8 +930,6 @@ void fpminimaxWithNeighborhoodSearchDiscreteRand(
   for (std::size_t k{0u}; k < bandNorms.size(); ++k)
     std::cout << "Band " << k << " error = " << bandNorms[k] << std::endl;
 
-
-  double lllBestNorm;
   std::vector<mpfr::mpreal> mpBufferA(lllA1.size() + fixedA.size());
   std::vector<mpfr::mpreal> mpFinalA1;
   for (std::size_t i = lllA1.size(); i < lllA1.size() + fixedA.size(); ++i)
@@ -1266,8 +1262,6 @@ void fpminimaxWithNeighborhoodSearchDiscreteFull(
   for (std::size_t k{0u}; k < bandNorms.size(); ++k)
     std::cout << "Band " << k << " error = " << bandNorms[k] << std::endl;
 
-
-  double lllBestNorm;
   std::vector<mpfr::mpreal> mpBufferA(lllA.size() + fixedA.size());
   std::vector<mpfr::mpreal> mpFinalA;
   for (std::size_t i = lllA.size(); i < lllA.size() + fixedA.size(); ++i)
@@ -1568,7 +1562,6 @@ void fpminimaxWithNeighborhoodSearchDiscreteMinimax(
   for (std::size_t k{0u}; k < bandNorms.size(); ++k)
     std::cout << "Band " << k << " error = " << bandNorms[k] << std::endl;
 
-  double lllBestNorm;
   std::vector<mpfr::mpreal> mpBufferA(lllA.size() + fixedA.size());
   std::vector<mpfr::mpreal> mpFinalA;
   for (std::size_t i = lllA.size(); i < lllA.size() + fixedA.size(); ++i)

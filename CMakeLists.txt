@@ -30,8 +30,9 @@ add_definitions(-std=c++11 -Wall)
 
 #---------------------------------------------------------------------------
 # common include directories
-#---------------------------------------------------------------------------
-set(COMMON_INCLUDES ${PROJECT_SOURCE_DIR}/include ${MPFR_INCLUDES})
+#----------------------------------------
+set(COMMON_INCLUDES ${PROJECT_SOURCE_DIR}/include ${MPFR_INCLUDES} ${GMP_INCLUDES} 
+                    ${FPLLL_INCLUDE} ${FIRPM_INCLUDE})
 
 add_subdirectory(${PROJECT_SOURCE_DIR}/src)
 if(DOXYGEN_FOUND)

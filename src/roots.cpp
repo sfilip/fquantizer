@@ -433,6 +433,8 @@ void computeNorm(std::pair<mpfr::mpreal, mpfr::mpreal> &norm,
         }
     }
   }
+
+  mpreal::set_default_prec(prevPrec);
 }
 
 void generateGridPoints(std::vector<double> &grid, std::size_t degree,
@@ -955,9 +957,9 @@ void findEigenExtremas(std::vector<double> &a,
 
   std::size_t extremaIt = 0u;
   std::vector<std::pair<double, double>> alternatingExtrema;
-  double minError = INT_MAX;
-  double maxError = INT_MIN;
-  double absError;
+  //double minError = INT_MAX;
+  //double maxError = INT_MIN;
+  //double absError;
 
   while (extremaIt < pExtremas2.size()) {
     std::pair<double, double> maxErrorPoint;

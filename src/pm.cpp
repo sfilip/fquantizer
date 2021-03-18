@@ -332,14 +332,17 @@ void findEigenExtrema(mpfr::mpreal &convergenceOrder, mpfr::mpreal &delta,
     } else {
       mpfr::mpreal abs1 = mpfr::abs(extremaErrorValueLeft);
       mpfr::mpreal abs2 = mpfr::abs(extremaErrorValueRight);
-      if (abs1 > abs2)
-      if(mpfr::abs(extremaErrorValueLeft) >= mpfr::abs(delta))
-        potentialExtrema.push_back(
-            std::make_pair(chebyBands[i].stop, extremaErrorValueLeft));
-      else
-        if(mpfr::abs(extremaErrorValueRight) >= mpfr::abs(delta))
-        potentialExtrema.push_back(
-            std::make_pair(chebyBands[i + 1].start, extremaErrorValueRight));
+      if (abs1 > abs2) {
+        if(mpfr::abs(extremaErrorValueLeft) >= mpfr::abs(delta)) {
+          potentialExtrema.push_back(
+              std::make_pair(chebyBands[i].stop, extremaErrorValueLeft));
+        } else {
+          if(mpfr::abs(extremaErrorValueRight) >= mpfr::abs(delta)) {
+          potentialExtrema.push_back(
+              std::make_pair(chebyBands[i + 1].start, extremaErrorValueRight));
+          }
+        }
+      }
     }
   }
   computeError(extremaErrorValue, chebyBands[chebyBands.size() - 1].stop, delta,
@@ -400,7 +403,7 @@ void findEigenExtrema(mpfr::mpreal &convergenceOrder, mpfr::mpreal &delta,
     for (std::size_t j = 0u; j < pExs[i].size(); ++j)
       pEx.push_back(pExs[i][j]);
 
-  std::size_t startingOffset = potentialExtrema.size();
+  //std::size_t startingOffset = potentialExtrema.size();
   //potentialExtrema.resize(potentialExtrema.size() + pEx.size());
 //#pragma omp parallel for
   for (std::size_t i = 0u; i < pEx.size(); ++i) {
@@ -2281,10 +2284,10 @@ PMOutputD firpm(std::size_t n,
     applyCos(x, omega);
     bandConversion(chebyBands, freqBands, ConversionDirection::FROMFREQ);
 
-    double finalDelta;
+    //double finalDelta;
     std::vector<double> coeffs;
     std::vector<double> finalExtrema;
-    double convergenceOrder;
+    //double convergenceOrder;
 
     PMOutputD output = exchange(x, chebyBands, eps, Nmax);
 
@@ -2385,6 +2388,7 @@ PMOutputD firpmRS(std::size_t n,
                     for(std::size_t i = 0u; i < chebyBands.size(); ++i)
                         if(chebyBands[i].start <= x && x <= chebyBands[i].stop)
                             return chebyBands[i].weight(BandSpace::CHEBY, x);
+                    return 1.0; // default value
                 };
                 std::vector<double> wam;
                 generateWAM(wam, chebyBands, degree);
@@ -2466,6 +2470,7 @@ PMOutputD firpmRS(std::size_t n,
             for(std::size_t i = 0u; i < chebyBands.size(); ++i)
                 if(chebyBands[i].start <= x && x <= chebyBands[i].stop)
                     return chebyBands[i].weight(BandSpace::CHEBY, x);
+            return 1.0; // default value
         };
         std::vector<double> wam;
         generateWAM(wam, chebyBands, degree);
@@ -3017,6 +3022,7 @@ PMOutputD firpmRS(std::size_t n,
                     for(std::size_t i = 0u; i < chebyBands.size(); ++i)
                         if(chebyBands[i].start <= x && x <= chebyBands[i].stop)
                             return chebyBands[i].weight(BandSpace::CHEBY, x);
+                    return 1.0; // default value
                 };
                 std::vector<double> wam;
                 generateWAM(wam, chebyBands, degree);
@@ -3181,6 +3187,7 @@ PMOutputD firpmRS(std::size_t n,
                         for(std::size_t i = 0u; i < chebyBands.size(); ++i)
                             if(chebyBands[i].start <= x && x <= chebyBands[i].stop)
                                 return chebyBands[i].weight(BandSpace::CHEBY, x);
+                        return 1.0; // default value
                     };
                     std::vector<double> wam;
                     generateWAM(wam, chebyBands, degree);
@@ -3308,6 +3315,7 @@ PMOutputD firpmAFPPM(std::size_t n,
                 for(std::size_t i = 0u; i < chebyBands.size(); ++i)
                     if(chebyBands[i].start <= x && x <= chebyBands[i].stop)
                         return chebyBands[i].weight(BandSpace::CHEBY, x);
+                return 1.0; // default value
             };
             std::vector<double> wam;
             generateWAM(wam, chebyBands, degree);
@@ -3363,6 +3371,7 @@ PMOutputD firpmAFPPM(std::size_t n,
         for(std::size_t i = 0u; i < chebyBands.size(); ++i)
             if(chebyBands[i].start <= x && x <= chebyBands[i].stop)
                 return chebyBands[i].weight(BandSpace::CHEBY, x);
+        return 1.0; // default value
     };
     std::vector<double> wam;
     generateWAM(wam, chebyBands, degree);
@@ -3374,10 +3383,10 @@ PMOutputD firpmAFPPM(std::size_t n,
 
 
 
-    double finalDelta;
+    //double finalDelta;
     std::vector<double> coeffs;
     std::vector<double> finalExtrema;
-    double convergenceOrder;
+    //double convergenceOrder;
 
     PMOutputD output = exchange(afpX, chebyBands, eps, Nmax);
 
@@ -3559,6 +3568,7 @@ PMOutputD firpmAFPPM(std::size_t n,
                     for(std::size_t i = 0u; i < chebyBands.size(); ++i)
                         if(chebyBands[i].start <= x && x <= chebyBands[i].stop)
                             return chebyBands[i].weight(BandSpace::CHEBY, x);
+                    return 1.0; // default value
                 };
                 std::vector<double> wam;
                 generateWAM(wam, chebyBands, degree);
@@ -3695,6 +3705,7 @@ PMOutputD firpmAFPPM(std::size_t n,
                     for(std::size_t i = 0u; i < chebyBands.size(); ++i)
                         if(chebyBands[i].start <= x && x <= chebyBands[i].stop)
                             return chebyBands[i].weight(BandSpace::CHEBY, x);
+                    return 1.0; // default value
                 };
                 std::vector<double> wam;
                 generateWAM(wam, chebyBands, degree);
